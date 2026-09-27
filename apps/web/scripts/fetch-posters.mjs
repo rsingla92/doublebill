@@ -19,7 +19,7 @@ const CONCURRENCY = 8;
 const TIMEOUT_MS = 20_000;
 /** A day past the page's own horizon, so a poster is never missing at the edge. */
 const HORIZON_DAYS = 61;
-const USER_AGENT = "Mozilla/5.0 (compatible; DoubleBill/1.0; +https://github.com/rsingla92/vancouver-indie-cinema)";
+const USER_AGENT = "Mozilla/5.0 (compatible; DoubleBill/1.0; +https://rsingla.ca/doublebill/)";
 
 const fileName = (url) => `${createHash("sha1").update(url).digest("hex").slice(0, 20)}.jpg`;
 const exists = (file) => access(file).then(() => true, () => false);
