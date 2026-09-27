@@ -2,6 +2,8 @@
 
 Independent cinema showtimes for Vancouver, Toronto and Montreal. A mobile-first static site that lists what each city's independent and repertory screens are playing; ticket purchases stay on each venue's own site.
 
+Live at [rsingla.ca/doublebill](https://rsingla.ca/doublebill/). GitHub Pages serves the site under the repository's name, so the repository is named `doublebill`; the build reads the path from the Pages configuration, and nothing in the code names it.
+
 ## Project status
 
 The pipeline is complete: source extraction, deterministic title normalization, guarded TMDB matching, idempotent PostgreSQL persistence with per-run reconciliation, JSON data files, and an installable mobile-first site. It has no LLM or generative-AI runtime dependency. The site covers three cities (see [Cities](#cities)).
