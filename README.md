@@ -47,6 +47,8 @@ A screening is linked to a TMDB film only when one candidate clearly wins; other
 
 When no database knows a film, the screening still shows the venue's own image and blurb, which the extractors take from the film's page. With an `OMDB_API_KEY` secret (free at omdbapi.com; a thousand lookups a day, answers cached for a week), OMDb is asked for a poster and a plot before falling back to the venue's, since festival films reach IMDb first.
 
+Posters are served by the site itself. Before each build, `apps/web/scripts/fetch-posters.mjs` copies every image the page will show into `public/posters/`, scaled to 400 pixels wide, and the deploy workflow keeps that folder between builds so only new posters are fetched. An image that cannot be fetched is loaded from its source as before. The Kingsway prints no film pages, so its unmatched films stay text-only.
+
 The review queue that shows what to pin: `select venue, normalized_title, match_reason from raw_source_items ...` (see `docs/architecture.md`).
 
 ## Cities
@@ -70,7 +72,7 @@ npm run ingest -- --days=30 --venues=rio-theatre  # narrower run
 
 For each venue the job records an `ingestion_runs` row, fetches the schedule, normalizes every title, links confident TMDB matches, and upserts `showtimes`. Future showtimes that a complete extraction no longer lists are marked inactive; history is never deleted. The venue slugs are listed under [Cities](#cities). Venues that share a platform share an adapter: the Rio and the Park (Barker events plugin), Cinéma du Parc, Beaubien and du Musée (the cinemacinema.ca schedule), the Cinémathèque québécoise and the Carlton (OmniWeb Ticketing), and the Revue and the Fox (Agile Ticketing links on their own sites).
 
-The normalizer strips known venue prefixes, series labels, and format/event suffixes, extracts a release year only when the listing sets one apart (for example `(1978)`), then ranks TMDB results by title similarity, year agreement, and popularity. A movie is linked only when the leading candidate clears both the confidence threshold and ambiguity margin. Uncertain screenings are still listed, under the title the venue printed and without poster or synopsis, and stay flagged in `raw_source_items` with `normalization_status = 'review'`; events the rules recognise as not a film are not listed.
+The normalizer strips known venue prefixes, series labels, and format/event suffixes, extracts a release year only when the listing sets one apart (for example `(1978)`), then ranks TMDB results by title similarity, year agreement, and popularity. A movie is linked only when the leading candidate clears both the confidence threshold and ambiguity margin. Uncertain screenings are still listed, under the title the venue printed and with the venue's own image and blurb when its page has them, and stay flagged in `raw_source_items` with `normalization_status = 'review'`; events the rules recognise as not a film are not listed.
 
 ## Hosting
 

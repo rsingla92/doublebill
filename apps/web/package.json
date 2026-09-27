@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/fetch-posters.mjs && next build",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests",
+    "posters": "node scripts/fetch-posters.mjs"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.13",
@@ -22,6 +23,7 @@
     "@types/node": "^24.5.2",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
+    "sharp": "^0.35.4",
     "typescript": "^5.9.2",
     "vitest": "^5.0.1"
   }

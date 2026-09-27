@@ -1,6 +1,7 @@
 import postgres from "postgres";
 import { getDemoShowtimes } from "./demo-data";
 import { VANCOUVER_TZ, vancouverDateKey } from "./format";
+import { localPoster } from "./posters";
 import { shortSynopsis } from "./showtimes";
 import type { ShowtimeView } from "./types";
 
@@ -68,5 +69,6 @@ export async function getShowtimes(days = DEFAULT_DAYS): Promise<ShowtimesResult
     order by s.starts_at asc, t.name asc`;
 
   // Only the featured pick shows a synopsis, and only its first sentences, so the page never carries more.
-  return { data: rows.map((row) => ({ ...row, synopsis: shortSynopsis(row.synopsis, 240), startsAt: row.startsAt.toISOString() })), demo: false, generatedAt };
+  // Posters come from the site's own copies where the build fetched them.
+  return { data: rows.map((row) => ({ ...row, posterUrl: localPoster(row.posterUrl), synopsis: shortSynopsis(row.synopsis, 240), startsAt: row.startsAt.toISOString() })), demo: false, generatedAt };
 }

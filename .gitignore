@@ -10,3 +10,5 @@ coverage/
 *.log
 *.tsbuildinfo
 .DS_Store
+# Poster copies fetched before each build; the deploy workflow caches them.
+apps/web/public/posters/

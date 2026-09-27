@@ -47,6 +47,13 @@ jobs:
             exit 1
           fi
       - run: npm ci
+      - name: Keep poster copies between builds
+        # The build fetches only posters this folder lacks and prunes the rest.
+        uses: actions/cache@v4
+        with:
+          path: apps/web/public/posters
+          key: posters-${{ github.run_id }}
+          restore-keys: posters-
       - name: Build static site
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
