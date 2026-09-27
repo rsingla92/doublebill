@@ -1,4 +1,4 @@
-import { load } from "cheerio";
+import { load, type CheerioAPI } from "cheerio";
 import { DateTime } from "luxon";
 import type { ExtractedShowtime } from "../contracts.js";
 
@@ -132,23 +132,56 @@ export interface PageDetails {
   synopsis?: string;
 }
 
-const SYNOPSIS_MAX = 1000;
+export const SYNOPSIS_MAX = 1000;
+/** A description shorter than this is a slogan or a ticket note, not a blurb. */
+const DESCRIPTION_MIN = 40;
+const PARAGRAPH_MIN = 80;
+
+/** The longest of the texts that is long enough to be a blurb, cut to the synopsis limit. */
+export function longestParagraph(texts: string[], minLength = PARAGRAPH_MIN): string | undefined {
+  const longest = texts.map(cleanText).filter((text) => text.length >= minLength).sort((a, b) => b.length - a.length)[0];
+  return longest?.slice(0, SYNOPSIS_MAX);
+}
+
+/** An image address a browser can load from anywhere: absolute, protocol-relative or root-relative, never data: or blank. */
+export function usableImage(src: string | undefined, pageUrl: string): string | undefined {
+  return src && /^(?:https?:\/\/|\/)/.test(src) ? absoluteUrl(src, pageUrl) : undefined;
+}
+
+/** A description worth showing: the page's own words, when it has enough of them. */
+export function usableDescription(text: string | undefined): string | undefined {
+  const cleaned = cleanText(text ?? "");
+  return cleaned.length >= DESCRIPTION_MIN ? cleaned.slice(0, SYNOPSIS_MAX) : undefined;
+}
 
 /**
  * What a film's own page says about it: the year it prints, its share image, and
  * a blurb (the page's description, or its longest paragraph).
  */
+/**
+ * The page's visible text with a space between elements, so "92 min" and the
+ * heading after it never fuse into one word that no rule can read.
+ */
+export function pageText($: CheerioAPI): string {
+  const nodes = $("body").find("*").addBack().not("script, style, noscript, template").contents().filter((_, node) => node.type === "text");
+  return cleanText(nodes.map((_, node) => $(node).text()).get().join(" "));
+}
+
 export function readPageDetails(html: string, pageUrl: string, maxYear: number): PageDetails {
   const $ = load(html);
-  const year = printedYear(cleanText($("body").text()), maxYear);
-  const image = $('meta[property="og:image"]').attr("content") ?? $('meta[name="twitter:image"]').attr("content");
-  const description = cleanText($('meta[property="og:description"]').attr("content") ?? $('meta[name="description"]').attr("content"));
-  const paragraph = $("p").map((_, element) => cleanText($(element).text())).get().filter((text) => text.length >= 80).sort((a, b) => b.length - a.length)[0];
-  const synopsis = (description.length >= 40 ? description : paragraph ?? "").slice(0, SYNOPSIS_MAX);
+  const year = printedYear(pageText($), maxYear);
+  const imageUrl = usableImage($('meta[property="og:image"]').attr("content") ?? $('meta[name="twitter:image"]').attr("content"), pageUrl);
+  const synopsis = usableDescription($('meta[property="og:description"]').attr("content") ?? $('meta[name="description"]').attr("content"))
+    ?? longestParagraph($("p").map((_, element) => $(element).text()).get());
+  return { year, ...(imageUrl ? { imageUrl } : {}), ...(synopsis ? { synopsis } : {}) };
+}
+
+/** The showtime fields a page's details fill, with nothing set for what the page lacked. */
+export function detailFields(details: { year?: number | null | undefined; imageUrl?: string | undefined; synopsis?: string | undefined }): Pick<ExtractedShowtime, "releaseYear" | "imageUrl" | "synopsis"> {
   return {
-    year,
-    ...(image && /^(?:https?:\/\/|\/)/.test(image) ? { imageUrl: absoluteUrl(image, pageUrl) } : {}),
-    ...(synopsis ? { synopsis } : {}),
+    ...(details.year ? { releaseYear: details.year } : {}),
+    ...(details.imageUrl ? { imageUrl: details.imageUrl } : {}),
+    ...(details.synopsis ? { synopsis: details.synopsis } : {}),
   };
 }
 

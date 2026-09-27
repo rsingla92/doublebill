@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { z } from "zod";
 import { extractedShowtimeSchema, type DateRange, type ExtractionBatch, type ExtractedShowtime } from "../contracts.js";
 import { fetchText } from "../http.js";
-import { cleanText, iso, mapWithConcurrency, TORONTO_TZ } from "./utils.js";
+import { cleanText, detailFields, iso, mapWithConcurrency, readPageDetails, TORONTO_TZ, usableDescription, usableImage } from "./utils.js";
 
 const BASE = "https://paradiseonbloor.com";
 
@@ -51,6 +51,14 @@ function graphNodes(html: string): unknown[] {
   }).get();
 }
 
+/** A schema.org value that may be a string, a list, or an object with a url. */
+function firstString(value: unknown): string | undefined {
+  if (typeof value === "string") return value;
+  if (Array.isArray(value)) return firstString(value[0]);
+  if (value && typeof value === "object" && "url" in value) return firstString((value as { url: unknown }).url);
+  return undefined;
+}
+
 export interface ParadisePageResult {
   showtimes: ExtractedShowtime[];
   warnings: string[];
@@ -65,6 +73,13 @@ export function parseParadiseMoviePage(html: string, pageUrl: string): ParadiseP
   const showtimes: ExtractedShowtime[] = [];
   const warnings: string[] = [];
   if (!rawTitle) return { showtimes, warnings: [`${pageUrl}: film page has no title`] };
+  // The structured data names the film's image and description; the share tags are the fallback.
+  const page = readPageDetails(html, pageUrl, DateTime.now().setZone(TORONTO_TZ).year + 1);
+  const details = {
+    year: Number.isInteger(year) && year >= 1888 ? year : page.year,
+    imageUrl: usableImage(firstString(movie?.image), pageUrl) ?? page.imageUrl,
+    synopsis: usableDescription(firstString(movie?.description)) ?? page.synopsis,
+  };
 
   for (const node of nodes) {
     const types = ([] as unknown[]).concat(node["@type"] ?? []);
@@ -89,7 +104,7 @@ export function parseParadiseMoviePage(html: string, pageUrl: string): ParadiseP
       startsAt: iso(startsAt.setZone(TORONTO_TZ)),
       detailUrl: pageUrl,
       ...(event.data.url ? { ticketUrl: event.data.url } : {}),
-      ...(Number.isInteger(year) && year >= 1888 ? { releaseYear: year } : {}),
+      ...detailFields(details),
       status: cancelled ? "cancelled" : soldOut ? "sold_out" : "scheduled",
       tags: [],
       sourcePayload: { showtimeId, eventStatus: event.data.eventStatus, movieName: movie?.name },

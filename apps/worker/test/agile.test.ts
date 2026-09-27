@@ -27,12 +27,23 @@ describe("Revue Cinema", () => {
   });
 
   it("takes the film page's Agile link and builds a stable id from the film and its start", () => {
-    const ticketUrl = parseRevueFilmPage(fixture("revue-film.html"), "https://revuecinema.ca/films/2001/");
-    expect(ticketUrl).toBe("https://prod3.agileticketing.net/websales/pages/info.aspx?evtinfo=831933~fc639be0-110c-4035-a588-842aceff5ef6");
-    const showtime = revueShowtime({ title: "To 70 And Beyond: 2001: A SPACE ODYSSEY (1968) - Presented on 70mm!", start: "2027-01-08 18:15:00", url: "https://revuecinema.ca/films/2001/" }, ticketUrl);
+    const film = parseRevueFilmPage(fixture("revue-film.html"), "https://revuecinema.ca/films/2001/");
+    const ticketUrl = "https://prod3.agileticketing.net/websales/pages/info.aspx?evtinfo=831933~fc639be0-110c-4035-a588-842aceff5ef6";
+    expect(film.ticketUrl).toBe(ticketUrl);
+    const showtime = revueShowtime({ title: "To 70 And Beyond: 2001: A SPACE ODYSSEY (1968) - Presented on 70mm!", start: "2027-01-08 18:15:00", url: "https://revuecinema.ca/films/2001/" }, film);
     expect(showtime).toMatchObject({ venueSlug: "revue-cinema", sourceUid: "2001:2027-01-08T18:15", startsAt: "2027-01-08T18:15:00-05:00", ticketUrl, detailUrl: "https://revuecinema.ca/films/2001/" });
     expect(showtime.sourcePayload).toMatchObject({ agileEventId: "831933" });
-    expect(parseRevueFilmPage("<html><body><a href='https://prod3.agileticketing.net/websales/pages/list.aspx?epguid=x'>All films</a></body></html>", "https://revuecinema.ca/films/x/")).toBeUndefined();
+    expect(parseRevueFilmPage("<html><body><a href='https://prod3.agileticketing.net/websales/pages/list.aspx?epguid=x'>All films</a></body></html>", "https://revuecinema.ca/films/x/").ticketUrl).toBeUndefined();
+  });
+
+  it("keeps the film page's year, still and blurb for every screening of the film", () => {
+    const html = `<html><head><meta property="og:image" content="https://revuecinema.ca/wp-content/uploads/2001.jpg"><meta property="og:description" content="Kubrick's voyage from the dawn of man to Jupiter and beyond, presented on 70mm."></head><body><p>USA, 1968, 149 min</p></body></html>`;
+    const film = parseRevueFilmPage(html, "https://revuecinema.ca/films/2001/", DateTime.fromISO("2026-09-25", { zone: "America/Toronto" }));
+    expect(film).toEqual({ details: { year: 1968, imageUrl: "https://revuecinema.ca/wp-content/uploads/2001.jpg", synopsis: "Kubrick's voyage from the dawn of man to Jupiter and beyond, presented on 70mm." } });
+    const showtime = revueShowtime({ title: "2001: A SPACE ODYSSEY", start: "2027-01-08 18:15:00", url: "https://revuecinema.ca/films/2001/" }, film);
+    expect(showtime).toMatchObject({ releaseYear: 1968, imageUrl: "https://revuecinema.ca/wp-content/uploads/2001.jpg", synopsis: expect.stringMatching(/^Kubrick/) });
+    expect(showtime.ticketUrl).toBeUndefined();
+    expect(revueShowtime({ title: "2001: A SPACE ODYSSEY", start: "2027-01-08 18:15:00", url: "https://revuecinema.ca/films/2001/" }, undefined)).not.toHaveProperty("imageUrl");
   });
 
   it("reports a calendar page without events", () => {
@@ -77,6 +88,15 @@ describe("Fox Theatre", () => {
     expect(showtimes).toHaveLength(2);
     expect(showtimes[0]).toMatchObject({ venueSlug: "fox-theatre", sourceUid: "649643", rawTitle: "Klassic Kidz: ParaNorman", startsAt: "2026-10-10T13:00:00-04:00", ticketUrl: "https://tickets.foxtheatre.ca/websales/pages/ticketsearchcriteria.aspx?evtinfo=649643~3cc021f8-1c84-4d3e-b58d-8be52cd73055", status: "scheduled" });
     expect(showtimes[1]).toMatchObject({ sourceUid: "649644", startsAt: "2026-10-12T13:20:00-04:00" });
+  });
+
+  it("keeps the page's share image, description and printed year", () => {
+    const post = { id: 1156262, link: "https://www.foxtheatre.ca/movies/klassic-kidz-paranorman/", title: "Klassic Kidz: ParaNorman" };
+    const reference = DateTime.fromISO("2026-09-25", { zone: "America/Toronto" });
+    const html = `<html><head><meta property="og:image" content="https://www.foxtheatre.ca/wp-content/uploads/paranorman.jpg"><meta name="description" content="A boy who can speak with the dead must save his town from a centuries-old curse."></head><body><h1>ParaNorman</h1><p>USA, 2012, 92 min</p><div class="showtimes-lists"><div class="item"><span class="date">Sunday, September 27</span><span class="time">11:00 am</span></div></div></body></html>`;
+    const [showtime] = parseFoxMoviePage(html, post, reference).showtimes;
+    expect(showtime).toMatchObject({ releaseYear: 2012, imageUrl: "https://www.foxtheatre.ca/wp-content/uploads/paranorman.jpg", synopsis: "A boy who can speak with the dead must save his town from a centuries-old curse." });
+    expect(parseFoxMoviePage(fixture("fox-movie.html"), post, reference).showtimes[0]).not.toHaveProperty("imageUrl");
   });
 
   it("marks a film the venue titles SOLD OUT and keeps the title as printed", () => {

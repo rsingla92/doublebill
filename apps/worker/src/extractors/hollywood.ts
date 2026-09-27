@@ -2,7 +2,7 @@ import { load, type CheerioAPI } from "cheerio";
 import type { DateTime } from "luxon";
 import { extractedShowtimeSchema, type ExtractionBatch, type ExtractedShowtime } from "../contracts.js";
 import { fetchText } from "../http.js";
-import { absoluteUrl, cleanText, iso, mapWithConcurrency, parseDateTime, printedYear } from "./utils.js";
+import { absoluteUrl, cleanText, iso, mapWithConcurrency, parseDateTime, printedYear, usableDescription, usableImage } from "./utils.js";
 
 const BASE = "https://www.hollywoodtheatre.ca";
 
@@ -73,8 +73,8 @@ export function parseHollywoodEventPage(html: string, pageUrl: string, reference
 
   const rawTitle = cleanText($("h1.heading-events").first().text() || $("title").text().split(" at Hollywood")[0]);
   const description = $("meta[name='description']").attr("content") ?? "";
-  const shareImage = $("meta[property='og:image']").attr("content");
-  const imageUrl = shareImage && /^https?:\/\//.test(shareImage) ? shareImage : undefined;
+  const imageUrl = usableImage($("meta[property='og:image']").attr("content"), pageUrl);
+  const synopsis = usableDescription(description);
   // Join text nodes with spaces so adjacent elements never fuse into one word.
   const bodyText = cleanText($("body *").contents().filter((_, node) => node.type === "text").map((_, node) => $(node).text()).get().join(" "));
   if (!rawTitle) return { showtimes: [], warning: `${pageUrl}: film page has no title` };
@@ -108,7 +108,7 @@ export function parseHollywoodEventPage(html: string, pageUrl: string, reference
       startsAt: iso(startsAt),
       ...(releaseYear ? { releaseYear } : {}),
       ...(imageUrl ? { imageUrl } : {}),
-      ...(description.length >= 40 ? { synopsis: description.slice(0, 1000) } : {}),
+      ...(synopsis ? { synopsis } : {}),
       detailUrl: pageUrl,
       ...(ticketHref ? { ticketUrl: absoluteUrl(ticketHref, pageUrl) } : {}),
       tags: categories.filter((category) => category !== "film"),

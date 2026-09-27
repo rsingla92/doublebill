@@ -42,9 +42,11 @@ describe("The Royal", () => {
     const persepolis = showtimes.find((showtime) => showtime.rawTitle === "Persépolis");
     expect(persepolis).toMatchObject({ venueSlug: "the-royal", sourceUid: "4157:2026-09-02T18:30", startsAt: "2026-09-02T18:30:00-04:00", detailUrl: "https://theroyal.to/persepolis-theroyaltheatre/" });
     expect(persepolis?.ticketUrl).toMatch(/^https:\/\/www\.eventbrite\.ca\/e\/persepolis/);
-    // Posts with a date but no time in the body are skipped with a warning.
+    expect(persepolis).toMatchObject({ imageUrl: "https://theroyal.to/wp-content/uploads/2026/08/PersepolisPoster_Aug5_FilmmakersInfo-760x1024.jpg", synopsis: expect.stringMatching(/.{80}/) });
+    // Posts with a date but no time in the body (an exhibit, a comedy night) are not screenings
+    // and are skipped without a warning, so the run still reconciles what disappeared.
     expect(showtimes).toHaveLength(1);
-    expect(warnings).toEqual([expect.stringMatching(/38exhibit.*no start time/), expect.stringMatching(/robyn-schall.*no start time/)]);
+    expect(warnings).toEqual([]);
   });
 
   it("handles two dates in one title and falls back to the doors time", () => {

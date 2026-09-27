@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { z } from "zod";
 import { extractedShowtimeSchema, type ExtractionBatch, type ExtractedShowtime } from "../contracts.js";
 import { fetchJson } from "../http.js";
-import { cleanText, iso, parseDateTime, TORONTO_TZ } from "./utils.js";
+import { cleanText, iso, longestParagraph, parseDateTime, TORONTO_TZ, usableImage } from "./utils.js";
 
 const BASE = "https://theroyal.to";
 /** WordPress category ids on theroyal.to: "screenings" sits under "events"; comedy has its own category. */
@@ -61,20 +61,21 @@ export function parseRoyalPosts(payload: unknown, reference?: DateTime): ParsedR
       return;
     }
     const title = cleanText(load(`<x>${post.data.title.rendered}</x>`)("x").text());
+    // A post with no date in its title or no start time in its body (an announcement,
+    // an exhibit, a rental notice) is not a screening to list. It is skipped without a
+    // warning, since a warning would stop the run from hiding screenings that are gone.
     const dated = title.match(TITLE_DATE);
-    if (!dated) {
-      warnings.push(`${post.data.link}: title "${title}" carries no date`);
-      return;
-    }
+    if (!dated) return;
     const [, rawTitle, month, days, year] = dated;
-    const body = cleanText(load(post.data.content.rendered)("body").text());
+    const content = load(post.data.content.rendered);
+    const body = cleanText(content("body").text());
     const clock = body.match(START_TIME)?.[1] ?? body.match(DOORS_TIME)?.[1];
-    if (!clock) {
-      warnings.push(`${post.data.link}: no start time in the post (text: "${body.slice(0, 120)}")`);
-      return;
-    }
+    if (!clock) return;
     const time = clock.replace(/\./g, "").replace(/\s*([ap]m)$/i, " $1");
     const ticketUrl = ticketLink(post.data.content.rendered, post.data.link);
+    // The post's first image is the promoter's poster; its longest paragraph the blurb.
+    const imageUrl = content("img").map((__, element) => content(element).attr("data-src") ?? content(element).attr("src") ?? "").get().map((src) => usableImage(src, post.data.link)).find(Boolean);
+    const synopsis = longestParagraph(content("p").map((__, element) => content(element).text()).get());
 
     for (const day of days!.split(/\s*(?:&|and|,)\s*/)) {
       try {
@@ -86,6 +87,8 @@ export function parseRoyalPosts(payload: unknown, reference?: DateTime): ParsedR
           startsAt: iso(startsAt),
           detailUrl: post.data.link,
           ...(ticketUrl ? { ticketUrl } : {}),
+          ...(imageUrl ? { imageUrl } : {}),
+          ...(synopsis ? { synopsis } : {}),
           tags: [],
           sourcePayload: { postId: post.data.id, postTitle: title, timeText: clock, usedDoors: !START_TIME.test(body) },
         }));

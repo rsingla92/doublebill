@@ -170,8 +170,9 @@ suite("CinemaRepository against Postgres", () => {
     await sql`insert into title_overrides (theatre_slug, title, tmdb_id, note) values ('*', 'Suspiria', 1, 'everywhere'), ('rio-theatre', 'SUSPIRIA', 2, 'the Rio')
       on conflict (theatre_slug, title) do update set tmdb_id = excluded.tmdb_id`;
     try {
-      expect(await repository.loadOverrides("rio-theatre")).toEqual(new Map([["suspiria", 2]]));
-      expect(await repository.loadOverrides("park-theatre")).toEqual(new Map([["suspiria", 1]]));
+      // Migrations pin other titles everywhere, so only the test's own entry is checked.
+      expect((await repository.loadOverrides("rio-theatre")).get("suspiria")).toBe(2);
+      expect((await repository.loadOverrides("park-theatre")).get("suspiria")).toBe(1);
     } finally {
       await sql`delete from title_overrides where title in ('Suspiria', 'SUSPIRIA')`;
     }

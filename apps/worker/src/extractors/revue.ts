@@ -4,7 +4,7 @@ import { z } from "zod";
 import { extractedShowtimeSchema, type DateRange, type ExtractionBatch, type ExtractedShowtime } from "../contracts.js";
 import { fetchText } from "../http.js";
 import { agileEventId, cleanAgileUrl, isAgileTicketLink } from "./agile.js";
-import { cleanText, iso, mapWithConcurrency, TORONTO_TZ } from "./utils.js";
+import { cleanText, detailFields, iso, mapWithConcurrency, readPageDetails, TORONTO_TZ, type PageDetails } from "./utils.js";
 
 const BASE = "https://revuecinema.ca";
 
@@ -70,14 +70,23 @@ export function parseRevueCalendar(html: string): ParsedRevueCalendar {
   return { events, warnings };
 }
 
-/** The film page's Agile link, or undefined when the film has none (a free or off-sale event). */
-export function parseRevueFilmPage(html: string, pageUrl: string): string | undefined {
-  const $ = load(html);
-  const href = $("a[href*='agileticketing.net/websales/pages/info.aspx']").filter((_, element) => isAgileTicketLink($(element).attr("href"))).first().attr("href");
-  return href ? cleanAgileUrl(href, pageUrl) : undefined;
+export interface RevueFilmPage {
+  /** The Agile link, or undefined when the film has none (a free or off-sale event). */
+  ticketUrl?: string;
+  /** The year, still and blurb the page prints. */
+  details: PageDetails;
 }
 
-export function revueShowtime(event: RevueCalendarEvent, ticketUrl: string | undefined): ExtractedShowtime {
+/** What one film page gives every screening of that film. */
+export function parseRevueFilmPage(html: string, pageUrl: string, reference?: DateTime): RevueFilmPage {
+  const $ = load(html);
+  const href = $("a[href*='agileticketing.net/websales/pages/info.aspx']").filter((_, element) => isAgileTicketLink($(element).attr("href"))).first().attr("href");
+  const details = readPageDetails(html, pageUrl, (reference ?? DateTime.now().setZone(TORONTO_TZ)).year + 1);
+  return { ...(href ? { ticketUrl: cleanAgileUrl(href, pageUrl) } : {}), details };
+}
+
+export function revueShowtime(event: RevueCalendarEvent, film: RevueFilmPage | undefined): ExtractedShowtime {
+  const ticketUrl = film?.ticketUrl;
   const startsAt = DateTime.fromFormat(event.start, event.start.length === 16 ? "yyyy-MM-dd HH:mm" : "yyyy-MM-dd HH:mm:ss", { zone: TORONTO_TZ });
   if (!startsAt.isValid) throw new Error(`unreadable start "${event.start}"`);
   const slug = new URL(event.url).pathname.replace(/^\/films\//, "").replace(/\/$/, "");
@@ -89,6 +98,7 @@ export function revueShowtime(event: RevueCalendarEvent, ticketUrl: string | und
     startsAt: iso(startsAt),
     detailUrl: event.url,
     ...(ticketUrl ? { ticketUrl } : {}),
+    ...detailFields(film?.details ?? {}),
     tags: [],
     sourcePayload: { ...event, agileEventId: agileEventId(ticketUrl) },
   });
@@ -107,10 +117,10 @@ export async function extractRevue(range: DateRange): Promise<ExtractionBatch> {
   });
 
   const filmUrls = [...new Set(inRange.map((event) => event.url))];
-  const tickets = new Map<string, string | undefined>();
+  const pages = new Map<string, RevueFilmPage>();
   await mapWithConcurrency(filmUrls, 4, async (url) => {
     try {
-      tickets.set(url, parseRevueFilmPage(await fetchText(new URL(url)), url));
+      pages.set(url, parseRevueFilmPage(await fetchText(new URL(url)), url));
     } catch (error) {
       warnings.push(`${url}: ${error instanceof Error ? error.message : String(error)}`);
     }
@@ -120,7 +130,7 @@ export async function extractRevue(range: DateRange): Promise<ExtractionBatch> {
   const seen = new Set<string>();
   for (const event of inRange) {
     try {
-      const showtime = revueShowtime(event, tickets.get(event.url));
+      const showtime = revueShowtime(event, pages.get(event.url));
       if (seen.has(showtime.sourceUid)) continue;
       seen.add(showtime.sourceUid);
       showtimes.push(showtime);

@@ -2,7 +2,7 @@ import { load } from "cheerio";
 import { DateTime } from "luxon";
 import { extractedShowtimeSchema, type ExtractionBatch, type ExtractedShowtime } from "../contracts.js";
 import { fetchText } from "../http.js";
-import { absoluteUrl, cleanText, iso, mapWithConcurrency, parseDateTime, printedYear, VANCOUVER_TZ } from "./utils.js";
+import { absoluteUrl, cleanText, detailFields, iso, mapWithConcurrency, parseDateTime, printedYear, readPageDetails, VANCOUVER_TZ } from "./utils.js";
 
 const BASE = "https://thecinematheque.ca";
 
@@ -19,7 +19,7 @@ export function parseCinemathequeFilmPage(html: string, pageUrl: string, referen
   const $ = load(html);
   const rawTitle = cleanText($(".filmTitle").first().text() || $("h1").first().text() || $("title").text().split("|")[0]);
   const now = reference ?? DateTime.now().setZone(VANCOUVER_TZ);
-  const releaseYear = parseFilmYear(cleanText($("body").text()), now.year + 1);
+  const details = readPageDetails(html, pageUrl, now.year + 1);
   const output: ExtractedShowtime[] = [];
 
   $("#screeningDates a[href*='evtinfo=']").each((_, element) => {
@@ -37,7 +37,7 @@ export function parseCinemathequeFilmPage(html: string, pageUrl: string, referen
       sourceUid: evtInfo ?? `${new URL(pageUrl).pathname}:${startsAt.toISO()}`,
       rawTitle,
       startsAt: iso(startsAt),
-      ...(releaseYear ? { releaseYear } : {}),
+      ...detailFields(details),
       detailUrl: pageUrl,
       ticketUrl,
       tags: [],

@@ -2,7 +2,7 @@ import { load } from "cheerio";
 import { DateTime } from "luxon";
 import { extractedShowtimeSchema, type ExtractionBatch, type ExtractedShowtime } from "../contracts.js";
 import { fetchText } from "../http.js";
-import { absoluteUrl, cleanText, iso, parseDateTime, printedYear, VANCOUVER_TZ } from "./utils.js";
+import { absoluteUrl, cleanText, iso, longestParagraph, parseDateTime, printedYear, usableImage, VANCOUVER_TZ } from "./utils.js";
 
 const BASE = "https://viff.org";
 
@@ -20,9 +20,8 @@ export function parseViffPage(html: string, pageUrl = `${BASE}/whats-on/`, refer
     // Everything on the card but the title: country, year and running time live there.
     const releaseYear = printedYear(cleanText(card.clone().find(".c-event-card__title").remove().end().text()), now.year + 1);
     const image = card.find("img").first();
-    const imageSrc = image.attr("data-src") ?? image.attr("src");
-    const imageUrl = imageSrc && /^(?:https?:)?\/\/|^\//.test(imageSrc) ? absoluteUrl(imageSrc, pageUrl) : undefined;
-    const synopsis = card.find("p").map((__, element) => cleanText($(element).text())).get().filter((text) => text.length >= 60).sort((a, b) => b.length - a.length)[0];
+    const imageUrl = usableImage(image.attr("data-src") ?? image.attr("src"), pageUrl);
+    const synopsis = longestParagraph(card.find("p").map((__, element) => $(element).text()).get(), 60);
 
     card.find(".c-event-instance").each((__, instanceElement) => {
       const instance = $(instanceElement);
@@ -47,7 +46,7 @@ export function parseViffPage(html: string, pageUrl = `${BASE}/whats-on/`, refer
         startsAt: iso(startsAt),
         ...(releaseYear ? { releaseYear } : {}),
         ...(imageUrl ? { imageUrl } : {}),
-        ...(synopsis ? { synopsis: synopsis.slice(0, 1000) } : {}),
+        ...(synopsis ? { synopsis } : {}),
         detailUrl,
         ...(ticketHref ? { ticketUrl: absoluteUrl(ticketHref, pageUrl) } : {}),
         status,

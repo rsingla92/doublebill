@@ -4,7 +4,7 @@ import { z } from "zod";
 import { extractedShowtimeSchema, type DateRange, type ExtractionBatch, type ExtractedShowtime } from "../contracts.js";
 import { fetchJson, fetchText } from "../http.js";
 import { agileEventId, cleanAgileUrl, isAgileTicketLink } from "./agile.js";
-import { cleanText, iso, mapWithConcurrency, parseDateTime, TORONTO_TZ } from "./utils.js";
+import { cleanText, detailFields, iso, mapWithConcurrency, parseDateTime, readPageDetails, TORONTO_TZ } from "./utils.js";
 
 const BASE = "https://www.foxtheatre.ca";
 const PAGE_SIZE = 100;
@@ -62,6 +62,7 @@ export function parseFoxMoviePage(html: string, post: Pick<FoxPost, "id" | "link
   const $ = load(html);
   const rawTitle = cleanText($("h1").first().text()) || post.title;
   const status = /^sold[\s-]*out\b/i.test(rawTitle) ? "sold_out" : "scheduled";
+  const details = readPageDetails(html, post.link, (reference ?? DateTime.now().setZone(TORONTO_TZ)).year + 1);
   const showtimes: ExtractedShowtime[] = [];
   const warnings: string[] = [];
 
@@ -83,6 +84,7 @@ export function parseFoxMoviePage(html: string, post: Pick<FoxPost, "id" | "link
         startsAt: iso(startsAt),
         detailUrl: post.link,
         ...(href ? { ticketUrl: cleanAgileUrl(href, post.link) } : {}),
+        ...detailFields(details),
         status,
         tags: [],
         sourcePayload: { postId: post.id, dateText: date, timeText: time, agileEventId: eventId },

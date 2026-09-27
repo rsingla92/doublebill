@@ -42,13 +42,23 @@ describe("Cinéma Public", () => {
   describe("extractPublic", () => {
     afterEach(() => vi.unstubAllGlobals());
 
-    it("fetches the schedule page once and warns when nothing parses", async () => {
-      vi.stubGlobal("fetch", vi.fn(async () => new Response(fixture)));
-      const batch = await extractPublic();
+    it("fetches the schedule page once, then each film page for its year, still and blurb, and warns when nothing parses", async () => {
+      const schedule = vi.fn(async () => new Response(fixture));
+      vi.stubGlobal("fetch", schedule);
+      const filmPages: string[] = [];
+      const batch = await extractPublic({
+        fetchPage: async (url) => {
+          filmPages.push(url.toString());
+          return `<html><head><meta property="og:image" content="https://cinemapublic.ca/still.jpg"></head><body><p>Réalisation : Someone, Canada, 2024, 96 min</p></body></html>`;
+        },
+      });
+      expect(schedule).toHaveBeenCalledTimes(1);
       expect(batch.showtimes.length).toBe(showtimes.length);
       expect(batch.warnings).toEqual([]);
+      expect(filmPages.length).toBe(new Set(batch.showtimes.map((showtime) => showtime.detailUrl)).size);
+      expect(batch.showtimes.every((showtime) => showtime.imageUrl === "https://cinemapublic.ca/still.jpg" && showtime.releaseYear === 2024)).toBe(true);
       vi.stubGlobal("fetch", vi.fn(async () => new Response("<html><body>maintenance</body></html>")));
-      expect((await extractPublic()).warnings).toEqual([expect.stringMatching(/no screenings parsed/)]);
+      expect((await extractPublic({ fetchPage: async () => "" })).warnings).toEqual([expect.stringMatching(/no screenings parsed/)]);
     });
   });
 });

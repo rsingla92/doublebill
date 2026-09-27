@@ -47,10 +47,19 @@ describe("Cinéma Moderne", () => {
         requested.push(url);
         return url.includes("/2026/11/") ? new Response("gone", { status: 404 }) : new Response(fixture);
       }));
-      const batch = await extractModerne({ start: new Date("2026-09-25T12:00:00Z"), end: new Date("2026-11-24T12:00:00Z") });
+      const filmPages: string[] = [];
+      const batch = await extractModerne({ start: new Date("2026-09-25T12:00:00Z"), end: new Date("2026-11-24T12:00:00Z") }, {
+        fetchPage: async (url) => {
+          filmPages.push(url.toString());
+          return `<html><head><meta property="og:image" content="/img/${url.pathname.split("/").filter(Boolean).at(-1)}.jpg"><meta property="og:description" content="The film's own page describes it in a sentence long enough to keep."></head><body></body></html>`;
+        },
+      });
       expect(requested).toEqual(["https://www.cinemamoderne.com/horaire/2026/09/", "https://www.cinemamoderne.com/horaire/2026/10/", "https://www.cinemamoderne.com/horaire/2026/11/"]);
       expect(batch.showtimes).toHaveLength(6);
       expect(batch.warnings).toEqual([expect.stringMatching(/2026\/11\/: GET .* failed with 404/)]);
+      // Each film's page is read once, for its still and blurb; the card already had the year.
+      expect(filmPages.length).toBe(new Set(batch.showtimes.map((showtime) => showtime.detailUrl)).size);
+      expect(batch.showtimes.every((showtime) => showtime.imageUrl?.startsWith("https://www.cinemamoderne.com/img/") && showtime.synopsis?.startsWith("The film's own page"))).toBe(true);
     });
   });
 });

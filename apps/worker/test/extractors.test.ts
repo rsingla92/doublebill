@@ -84,6 +84,8 @@ describe("The Cinematheque", () => {
     const withMeta = page("September 22", "Tuesday").replace("<section", '<p class="meta">Japan 1962. Dir: Masaki Kobayashi. 133 min. 35mm</p><section');
     expect(parseCinemathequeFilmPage(withMeta, "https://thecinematheque.ca/films/2026/harakiri", reference)[0]?.releaseYear).toBe(1962);
     expect(parseCinemathequeFilmPage(page("September 22", "Tuesday"), "https://thecinematheque.ca/films/2026/harakiri", reference)[0]?.releaseYear).toBeUndefined();
+    const withShare = `<head><meta property="og:image" content="https://thecinematheque.ca/stills/harakiri.jpg"><meta property="og:description" content="Kobayashi's samurai drama, a ronin's request to die in a lord's courtyard."></head>${withMeta}`;
+    expect(parseCinemathequeFilmPage(withShare, "https://thecinematheque.ca/films/2026/harakiri", reference)[0]).toMatchObject({ releaseYear: 1962, imageUrl: "https://thecinematheque.ca/stills/harakiri.jpg", synopsis: expect.stringMatching(/^Kobayashi/) });
     expect(parseFilmYear("Programme 2026. Japan 1962. Dir: Masaki Kobayashi.", 2027)).toBe(1962);
     expect(parseFilmYear("Sept 2026 season. No credit here.", 2027)).toBeNull();
   });

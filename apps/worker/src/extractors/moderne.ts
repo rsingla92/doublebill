@@ -3,7 +3,7 @@ import type { AnyNode } from "domhandler";
 import { DateTime } from "luxon";
 import { extractedShowtimeSchema, type DateRange, type ExtractionBatch, type ExtractedShowtime } from "../contracts.js";
 import { fetchText } from "../http.js";
-import { cleanText, iso, TORONTO_TZ } from "./utils.js";
+import { addPageDetails, cleanText, iso, TORONTO_TZ } from "./utils.js";
 
 const BASE = "https://www.cinemamoderne.com";
 
@@ -97,7 +97,12 @@ export function monthsInRange(range: DateRange): Array<[number, number]> {
   return months;
 }
 
-export async function extractModerne(range: DateRange): Promise<ExtractionBatch> {
+export interface ModerneOptions {
+  /** Page fetcher for the film pages, replaceable in tests. */
+  fetchPage?: (url: URL) => Promise<string>;
+}
+
+export async function extractModerne(range: DateRange, options: ModerneOptions = {}): Promise<ExtractionBatch> {
   const showtimes: ExtractedShowtime[] = [];
   const warnings: string[] = [];
   const seen = new Set<string>();
@@ -119,5 +124,7 @@ export async function extractModerne(range: DateRange): Promise<ExtractionBatch>
     }
   }
 
+  // The calendar card has the year; the film's page has its still and blurb.
+  await addPageDetails(showtimes, options.fetchPage ?? fetchText);
   return { venueSlug: "cinema-moderne", fetchedAt: new Date().toISOString(), showtimes, warnings };
 }

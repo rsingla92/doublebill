@@ -2,7 +2,7 @@ import { load } from "cheerio";
 import { DateTime } from "luxon";
 import { extractedShowtimeSchema, type ExtractionBatch, type ExtractedShowtime } from "../contracts.js";
 import { fetchText } from "../http.js";
-import { cleanText, iso, TORONTO_TZ } from "./utils.js";
+import { addPageDetails, cleanText, iso, TORONTO_TZ } from "./utils.js";
 
 const BASE = "https://cinemapublic.ca";
 const SCHEDULE_URL = `${BASE}/horaire/`;
@@ -76,9 +76,16 @@ export function parsePublicSchedule(html: string, pageUrl = SCHEDULE_URL): Parse
   return { showtimes, warnings };
 }
 
-export async function extractPublic(): Promise<ExtractionBatch> {
+export interface PublicOptions {
+  /** Page fetcher for the film pages, replaceable in tests. */
+  fetchPage?: (url: URL) => Promise<string>;
+}
+
+export async function extractPublic(options: PublicOptions = {}): Promise<ExtractionBatch> {
   const parsed = parsePublicSchedule(await fetchText(new URL(SCHEDULE_URL)));
   const warnings = [...parsed.warnings];
   if (parsed.showtimes.length === 0) warnings.push(`${SCHEDULE_URL}: no screenings parsed`);
+  // The schedule card has no year; the film's page prints it with the still and blurb.
+  await addPageDetails(parsed.showtimes, options.fetchPage ?? fetchText);
   return { venueSlug: "cinema-public", fetchedAt: new Date().toISOString(), showtimes: parsed.showtimes, warnings };
 }
