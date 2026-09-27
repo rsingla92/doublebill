@@ -12,6 +12,7 @@ import { extractPublic } from "./public.js";
 import { extractRevue } from "./revue.js";
 import { extractRoyal } from "./royal.js";
 import { extractHollywood } from "./hollywood.js";
+import { extractHotDocs } from "./hot-docs.js";
 import { extractParadise } from "./paradise.js";
 import { extractPark } from "./park.js";
 import { extractRio } from "./rio.js";
@@ -38,6 +39,7 @@ export { extractCarlton } from "./carlton.js";
 export { extractKingsway, parseKingswaySchedule, parseDaySpec } from "./kingsway.js";
 export { extractRoyal, parseRoyalPosts } from "./royal.js";
 export { extractParadise, parseParadiseCalendar, parseParadiseMoviePage } from "./paradise.js";
+export { extractHotDocs, parseHotDocsFeed, readFeed as readHotDocsFeed, HOT_DOCS_FEED_URL } from "./hot-docs.js";
 
 export type VenueExtractor = (range: DateRange) => Promise<ExtractionBatch>;
 
@@ -60,4 +62,5 @@ export const VENUE_EXTRACTORS: Readonly<Record<VenueSlug, VenueExtractor>> = {
   "kingsway-theatre": () => extractKingsway(),
   "the-royal": () => extractRoyal(),
   "paradise-theatre": (range) => extractParadise(range),
+  "hot-docs-cinema": (range) => extractHotDocs(range),
 };

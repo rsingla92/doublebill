@@ -18,6 +18,7 @@ export const venueSlugSchema = z.enum([
   "kingsway-theatre",
   "the-royal",
   "paradise-theatre",
+  "hot-docs-cinema",
 ]);
 
 export const extractedShowtimeSchema = z.object({

@@ -58,10 +58,10 @@ Every theatre carries a `city` and an IANA `timezone`, the JSON files include bo
 | City | Venues | Slugs |
 |---|---|---|
 | Vancouver | Rio Theatre, The Park Theatre, The Cinematheque, VIFF Centre, Hollywood Theatre | `rio-theatre`, `park-theatre`, `the-cinematheque`, `viff-centre`, `hollywood-theatre` |
-| Toronto | Revue Cinema, Fox Theatre, Paradise Theatre, The Royal, Carlton Cinema, Kingsway Theatre | `revue-cinema`, `fox-theatre`, `paradise-theatre`, `the-royal`, `carlton-cinema`, `kingsway-theatre` |
+| Toronto | Revue Cinema, Fox Theatre, Paradise Theatre, The Royal, Carlton Cinema, Kingsway Theatre, Hot Docs Ted Rogers Cinema | `revue-cinema`, `fox-theatre`, `paradise-theatre`, `the-royal`, `carlton-cinema`, `kingsway-theatre`, `hot-docs-cinema` |
 | Montreal | Cinéma du Parc, Cinéma Beaubien, Cinéma du Musée, Cinéma Moderne, Cinéma Public, Cinémathèque québécoise | `cinema-du-parc`, `cinema-beaubien`, `cinema-du-musee`, `cinema-moderne`, `cinema-public`, `cinematheque-quebecoise` |
 
-TIFF Lightbox and the Hot Docs Ted Rogers Cinema are seeded but have no extractor: tiff.net answers every server-side request with a bot challenge and Hot Docs publishes its schedule only on an Agile Ticketing site that does the same. [`docs/hidden-api-hunt.md`](docs/hidden-api-hunt.md) records what was found for every venue.
+TIFF Lightbox is seeded but has no extractor: tiff.net refuses every request from GitHub's runners outright, and its Ticketmaster box office does the same. The Hot Docs Ted Rogers Cinema publishes its schedule only on an Agile Ticketing box office behind a bot challenge, so its extractor loads the feed in headless Chrome (`apps/worker/src/browser.ts`), which the GitHub runner has; a local run needs Google Chrome or a `BROWSER_EXECUTABLE`. [`docs/hidden-api-hunt.md`](docs/hidden-api-hunt.md) records what was found for every venue.
 
 ## Ingestion
 
@@ -70,7 +70,7 @@ npm run ingest                                    # every venue, 60-day horizon
 npm run ingest -- --days=30 --venues=rio-theatre  # narrower run
 ```
 
-For each venue the job records an `ingestion_runs` row, fetches the schedule, normalizes every title, links confident TMDB matches, and upserts `showtimes`. Future showtimes that a complete extraction no longer lists are marked inactive; history is never deleted. The venue slugs are listed under [Cities](#cities). Venues that share a platform share an adapter: the Rio and the Park (Barker events plugin), Cinéma du Parc, Beaubien and du Musée (the cinemacinema.ca schedule), the Cinémathèque québécoise and the Carlton (OmniWeb Ticketing), and the Revue and the Fox (Agile Ticketing links on their own sites).
+For each venue the job records an `ingestion_runs` row, fetches the schedule, normalizes every title, links confident TMDB matches, and upserts `showtimes`. Future showtimes that a complete extraction no longer lists are marked inactive; history is never deleted. The venue slugs are listed under [Cities](#cities). Venues that share a platform share an adapter: the Rio and the Park (Barker events plugin), Cinéma du Parc, Beaubien and du Musée (the cinemacinema.ca schedule), the Cinémathèque québécoise and the Carlton (OmniWeb Ticketing), and the Revue and the Fox (Agile Ticketing links on their own sites). Hot Docs sells through Agile too, and is the one venue read through a browser rather than plain HTTP.
 
 The normalizer strips known venue prefixes, series labels, and format/event suffixes, extracts a release year only when the listing sets one apart (for example `(1978)`), then ranks TMDB results by title similarity, year agreement, and popularity. A movie is linked only when the leading candidate clears both the confidence threshold and ambiguity margin. Uncertain screenings are still listed, under the title the venue printed and with the venue's own image and blurb when its page has them, and stay flagged in `raw_source_items` with `normalization_status = 'review'`; events the rules recognise as not a film are not listed.
 

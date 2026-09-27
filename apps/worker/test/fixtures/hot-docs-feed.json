@@ -1,0 +1,630 @@
+{
+  "SourceLink": "https://boxoffice.hotdocs.ca/websales/feed.ashx?guid=64170f3e-6ca4-4dbc-9cb5-e359273e95dd&showslist=true&format=json&withmedia=true&v=latest",
+  "LastUpdated": "2026-09-26T23:40:40",
+  "UpdateFrequencyMinutes": 10,
+  "ArrayOfShows": [
+    {
+      "ID": 651337,
+      "ExternalID": "651337",
+      "CorpOrgID": 2338,
+      "CorpOrgName": "Hot Docs",
+      "OrgID": 2339,
+      "Folder": "Cinema Films",
+      "Name": "Baby Doe",
+      "Duration": "100",
+      "Type": "First Run",
+      "Distributor": "Comscore",
+      "DistributorID": "2379",
+      "ShortDescription": "When new evidence emerges decades later, a churchgoing mom of three is arrested for the murder of a child she says was stillborn.",
+      "ShortDescriptive1": "New Release",
+      "ShortDescriptive2": "",
+      "ExtraHTML": "",
+      "DisplayColor": "FFFFFF",
+      "EventImage": "https://prod5.agileticketing.net/images/user/bc_2338/baby%20doe1.jpg",
+      "ThumbImage": "https://prod5.agileticketing.net/images/user/bc_2338/baby%20doe1_thumb.jpg",
+      "InfoLink": "https://boxoffice.hotdocs.ca/websales/pages/info.aspx?evtinfo=651337~cf285ddd-dacb-4f18-89b8-1252c6dcffa6&",
+      "ModifiedDate": "2026-09-15T09:45:48",
+      "CustomProperties": [
+        {
+          "Name": "Copyright",
+          "Group": "Film Info",
+          "Sequence": 1,
+          "Hidden": false,
+          "Value": "2025",
+          "CustomPropertyID": 206
+        },
+        {
+          "Name": "Country Listing",
+          "Group": "Film Info",
+          "Sequence": 2,
+          "Hidden": false,
+          "Value": "USA",
+          "CustomPropertyID": 207
+        },
+        {
+          "Name": "Runtime",
+          "Group": "Film Info",
+          "Sequence": 3,
+          "Hidden": false,
+          "Value": "100",
+          "CustomPropertyID": 204
+        },
+        {
+          "Name": "Filter by Type",
+          "Group": "Cinema Extra",
+          "Sequence": 4,
+          "Hidden": true,
+          "Value": "New Releases",
+          "CustomPropertyID": 326
+        },
+        {
+          "Name": "Status",
+          "Group": "Cinema Extra",
+          "Sequence": 5,
+          "Hidden": true,
+          "Value": "KenticoInclude",
+          "CustomPropertyID": 242
+        },
+        {
+          "Name": "Director(s)",
+          "Group": "Cast/Crew Info",
+          "Sequence": 6,
+          "Hidden": false,
+          "Value": "Jessica Earnshaw",
+          "CustomPropertyID": 205
+        }
+      ],
+      "AdditionalMedia": [
+        {
+          "Caption": "a woman with glasses looking up at a person",
+          "MainDuplicate": true,
+          "Sequence": 0,
+          "Type": "Image",
+          "Value": "https://prod5.agileticketing.net/images/user/bc_2338/baby%20doe1.jpg",
+          "MediaEmbed": "<img src=\"https://prod5.agileticketing.net/images/user/bc_2338/BABY DOE1.jpg\" />"
+        }
+      ],
+      "CurrentShowings": [
+        {
+          "ID": 653547,
+          "DateTBD": false,
+          "StartDate": "2026-10-25T15:30:00",
+          "EndDate": "2026-10-25T17:10:00",
+          "DisplayDate": "2026-10-25T15:30:00",
+          "Duration": "100",
+          "Type": "Reserved Seating",
+          "ShortDescriptive": "",
+          "ShortDescription": "When new evidence emerges decades later, a churchgoing mom of three is arrested for the murder of a child she says was stillborn.",
+          "SalesMessage": "Buy",
+          "SalesState": "DuringSales",
+          "LegacyPurchaseLink": "https://boxoffice.hotdocs.ca/websales/pages/ticketsearchcriteria.aspx?evtinfo=653547~cf285ddd-dacb-4f18-89b8-1252c6dcffa6&",
+          "ContentDelivery": "InPerson",
+          "PurchasePrompt": "",
+          "MoreInfoPrompt": "",
+          "ModifiedDate": "2026-09-15T09:45:48",
+          "CustomProperties": [],
+          "Venue": {
+            "VenueID": 289,
+            "Name": "Hot Docs Ted Rogers Cinema",
+            "Short": "HOTDOCS",
+            "Address1": "506 Bloor Street West",
+            "Address2": "",
+            "City": "Toronto",
+            "State": "ON",
+            "Zip": "M5S 1Y3"
+          }
+        }
+      ],
+      "RelatedEvents": []
+    },
+    {
+      "ID": 641944,
+      "ExternalID": "641944",
+      "CorpOrgID": 2338,
+      "CorpOrgName": "Hot Docs",
+      "OrgID": 2339,
+      "Folder": "Cinema Films",
+      "Name": "Doc Soup: Hanging by a Wire",
+      "Duration": "0",
+      "Type": "Doc Soup",
+      "Distributor": "Comscore",
+      "DistributorID": "2379",
+      "ShortDescription": "A routine commute in northern Pakistan turns terrifying when two cables snap, leaving eight passengers including six schoolboys dangling 900 feet above a ravine.",
+      "ShortDescriptive1": "",
+      "ShortDescriptive2": "",
+      "ExtraHTML": "",
+      "DisplayColor": "FFFFFF",
+      "EventImage": "https://prod5.agileticketing.net/images/user/bc_2338/hanging-by-a-wire_1.jpg",
+      "ThumbImage": "https://prod5.agileticketing.net/images/user/bc_2338/hanging-by-a-wire_1_thumb.jpg",
+      "InfoLink": "https://boxoffice.hotdocs.ca/websales/pages/info.aspx?evtinfo=641944~cf285ddd-dacb-4f18-89b8-1252c6dcffa6&",
+      "ModifiedDate": "2026-09-15T09:45:48",
+      "CustomProperties": [
+        {
+          "Name": "Copyright",
+          "Group": "Film Info",
+          "Sequence": 1,
+          "Hidden": false,
+          "Value": "2026",
+          "CustomPropertyID": 206
+        },
+        {
+          "Name": "Country Listing",
+          "Group": "Film Info",
+          "Sequence": 2,
+          "Hidden": false,
+          "Value": "UK",
+          "CustomPropertyID": 207
+        },
+        {
+          "Name": "Country Listing",
+          "Group": "Film Info",
+          "Sequence": 3,
+          "Hidden": false,
+          "Value": "Pakistan",
+          "CustomPropertyID": 207
+        },
+        {
+          "Name": "Country Listing",
+          "Group": "Film Info",
+          "Sequence": 4,
+          "Hidden": false,
+          "Value": "USA",
+          "CustomPropertyID": 207
+        },
+        {
+          "Name": "Runtime",
+          "Group": "Film Info",
+          "Sequence": 5,
+          "Hidden": false,
+          "Value": "81",
+          "CustomPropertyID": 204
+        },
+        {
+          "Name": "Filter by Type",
+          "Group": "Cinema Extra",
+          "Sequence": 6,
+          "Hidden": true,
+          "Value": "Doc Soup",
+          "CustomPropertyID": 326
+        },
+        {
+          "Name": "Status",
+          "Group": "Cinema Extra",
+          "Sequence": 7,
+          "Hidden": true,
+          "Value": "KenticoInclude",
+          "CustomPropertyID": 242
+        },
+        {
+          "Name": "Director(s)",
+          "Group": "Cast/Crew Info",
+          "Sequence": 8,
+          "Hidden": false,
+          "Value": "Mohammed Ali Naqvi",
+          "CustomPropertyID": 205
+        }
+      ],
+      "AdditionalMedia": [
+        {
+          "Caption": "a group of people trapped in a gondola",
+          "MainDuplicate": true,
+          "Sequence": 0,
+          "Type": "Image",
+          "Value": "https://prod5.agileticketing.net/images/user/bc_2338/hanging-by-a-wire_1.jpg",
+          "MediaEmbed": "<img src=\"https://prod5.agileticketing.net/images/user/bc_2338/Hanging-by-a-Wire_1.jpg\" />"
+        }
+      ],
+      "CurrentShowings": [
+        {
+          "ID": 641951,
+          "DateTBD": false,
+          "StartDate": "2026-10-07T19:00:00",
+          "EndDate": "2026-10-07T19:00:00",
+          "DisplayDate": "2026-10-07T19:00:00",
+          "Duration": "0",
+          "Type": "Doc Soup",
+          "ShortDescriptive": "",
+          "ShortDescription": "A routine commute in northern Pakistan turns terrifying when two cables snap, leaving eight passengers including six schoolboys dangling 900 feet above a ravine.",
+          "SalesMessage": "Buy",
+          "SalesState": "DuringSales",
+          "LegacyPurchaseLink": "https://boxoffice.hotdocs.ca/websales/pages/ticketsearchcriteria.aspx?evtinfo=641951~cf285ddd-dacb-4f18-89b8-1252c6dcffa6&",
+          "ContentDelivery": "InPerson",
+          "PurchasePrompt": "",
+          "MoreInfoPrompt": "",
+          "ModifiedDate": "2026-09-15T09:45:48",
+          "CustomProperties": [],
+          "Venue": {
+            "VenueID": 289,
+            "Name": "Hot Docs Ted Rogers Cinema",
+            "Short": "HOTDOCS",
+            "Address1": "506 Bloor Street West",
+            "Address2": "",
+            "City": "Toronto",
+            "State": "ON",
+            "Zip": "M5S 1Y3"
+          }
+        },
+        {
+          "ID": 641952,
+          "DateTBD": false,
+          "StartDate": "2026-10-08T10:30:00",
+          "EndDate": "2026-10-08T10:30:00",
+          "DisplayDate": "2026-10-08T10:30:00",
+          "Duration": "0",
+          "Type": "Doc Soup",
+          "ShortDescriptive": "",
+          "ShortDescription": "A routine commute in northern Pakistan turns terrifying when two cables snap, leaving eight passengers including six schoolboys dangling 900 feet above a ravine.",
+          "SalesMessage": "Buy",
+          "SalesState": "DuringSales",
+          "LegacyPurchaseLink": "https://boxoffice.hotdocs.ca/websales/pages/ticketsearchcriteria.aspx?evtinfo=641952~cf285ddd-dacb-4f18-89b8-1252c6dcffa6&",
+          "ContentDelivery": "InPerson",
+          "PurchasePrompt": "",
+          "MoreInfoPrompt": "",
+          "ModifiedDate": "2026-09-15T09:45:48",
+          "CustomProperties": [],
+          "Venue": {
+            "VenueID": 289,
+            "Name": "Hot Docs Ted Rogers Cinema",
+            "Short": "HOTDOCS",
+            "Address1": "506 Bloor Street West",
+            "Address2": "",
+            "City": "Toronto",
+            "State": "ON",
+            "Zip": "M5S 1Y3"
+          }
+        }
+      ],
+      "RelatedEvents": []
+    },
+    {
+      "ID": 651197,
+      "ExternalID": "651197",
+      "CorpOrgID": 2338,
+      "CorpOrgName": "Hot Docs",
+      "OrgID": 2339,
+      "Folder": "Cinema Films",
+      "Name": "Frankenstein (1931)",
+      "Duration": "70",
+      "Type": "Midtown Matinees",
+      "Distributor": "Comscore",
+      "DistributorID": "2379",
+      "ShortDescription": "An enduring cinema classic that helped to build the horror film genre nearly 100 years ago.",
+      "ShortDescriptive1": "Nightmares on Bloor Street x Midtown Matinees",
+      "ShortDescriptive2": "",
+      "ExtraHTML": "",
+      "DisplayColor": "FFFFFF",
+      "EventImage": "https://prod5.agileticketing.net/images/user/bc_2338/frankenstein1_v2.jpg",
+      "ThumbImage": "https://prod5.agileticketing.net/images/user/bc_2338/frankenstein1_v2_thumb.jpg",
+      "InfoLink": "https://boxoffice.hotdocs.ca/websales/pages/info.aspx?evtinfo=651197~cf285ddd-dacb-4f18-89b8-1252c6dcffa6&",
+      "ModifiedDate": "2026-09-15T09:45:48",
+      "CustomProperties": [
+        {
+          "Name": "Copyright",
+          "Group": "Film Info",
+          "Sequence": 1,
+          "Hidden": false,
+          "Value": "1931",
+          "CustomPropertyID": 206
+        },
+        {
+          "Name": "Country Listing",
+          "Group": "Film Info",
+          "Sequence": 2,
+          "Hidden": false,
+          "Value": "USA",
+          "CustomPropertyID": 207
+        },
+        {
+          "Name": "Runtime",
+          "Group": "Film Info",
+          "Sequence": 3,
+          "Hidden": false,
+          "Value": "70",
+          "CustomPropertyID": 204
+        },
+        {
+          "Name": "Filter by Type",
+          "Group": "Cinema Extra",
+          "Sequence": 4,
+          "Hidden": true,
+          "Value": "Midtown Matinees",
+          "CustomPropertyID": 326
+        },
+        {
+          "Name": "Filter by Type",
+          "Group": "Cinema Extra",
+          "Sequence": 5,
+          "Hidden": true,
+          "Value": "Nightmares on Bloor Street",
+          "CustomPropertyID": 326
+        },
+        {
+          "Name": "Status",
+          "Group": "Cinema Extra",
+          "Sequence": 6,
+          "Hidden": true,
+          "Value": "KenticoInclude",
+          "CustomPropertyID": 242
+        },
+        {
+          "Name": "Director(s)",
+          "Group": "Cast/Crew Info",
+          "Sequence": 7,
+          "Hidden": false,
+          "Value": "James Whale",
+          "CustomPropertyID": 205
+        }
+      ],
+      "AdditionalMedia": [
+        {
+          "Caption": "poster art of Boris Karloff",
+          "MainDuplicate": true,
+          "Sequence": 0,
+          "Type": "Image",
+          "Value": "https://prod5.agileticketing.net/images/user/bc_2338/frankenstein1_v2.jpg",
+          "MediaEmbed": "<img src=\"https://prod5.agileticketing.net/images/user/bc_2338/FRANKENSTEIN1_v2.jpg\" />"
+        }
+      ],
+      "CurrentShowings": [
+        {
+          "ID": 653546,
+          "DateTBD": false,
+          "StartDate": "2026-10-25T13:00:00",
+          "EndDate": "2026-10-25T14:10:00",
+          "DisplayDate": "2026-10-25T13:00:00",
+          "Duration": "70",
+          "Type": "Reserved Seating",
+          "ShortDescriptive": "",
+          "ShortDescription": "An enduring cinema classic that helped to build the horror film genre nearly 100 years ago.",
+          "SalesMessage": "Buy",
+          "SalesState": "DuringSales",
+          "LegacyPurchaseLink": "https://boxoffice.hotdocs.ca/websales/pages/ticketsearchcriteria.aspx?evtinfo=653546~cf285ddd-dacb-4f18-89b8-1252c6dcffa6&",
+          "ContentDelivery": "InPerson",
+          "PurchasePrompt": "",
+          "MoreInfoPrompt": "",
+          "ModifiedDate": "2026-09-15T09:45:48",
+          "CustomProperties": [],
+          "Venue": {
+            "VenueID": 289,
+            "Name": "Hot Docs Ted Rogers Cinema",
+            "Short": "HOTDOCS",
+            "Address1": "506 Bloor Street West",
+            "Address2": "",
+            "City": "Toronto",
+            "State": "ON",
+            "Zip": "M5S 1Y3"
+          }
+        }
+      ],
+      "RelatedEvents": []
+    },
+    {
+      "ID": 650665,
+      "ExternalID": "650665",
+      "CorpOrgID": 2338,
+      "CorpOrgName": "Hot Docs",
+      "OrgID": 2339,
+      "Folder": "Cinema Films",
+      "Name": "Musk",
+      "Duration": "232",
+      "Type": "First Run",
+      "Distributor": "Comscore",
+      "DistributorID": "2379",
+      "ShortDescription": "Oscar-winner Alex Gibney takes on the world’s richest man, Elon Musk.",
+      "ShortDescriptive1": "New Release",
+      "ShortDescriptive2": "",
+      "ExtraHTML": "",
+      "DisplayColor": "FFFFFF",
+      "EventImage": "https://prod5.agileticketing.net/images/user/bc_2338/musk2.jpg",
+      "ThumbImage": "https://prod5.agileticketing.net/images/user/bc_2338/musk2_thumb.jpg",
+      "InfoLink": "https://boxoffice.hotdocs.ca/websales/pages/info.aspx?evtinfo=650665~cf285ddd-dacb-4f18-89b8-1252c6dcffa6&",
+      "ModifiedDate": "2026-09-15T09:45:48",
+      "CustomProperties": [
+        {
+          "Name": "Copyright",
+          "Group": "Film Info",
+          "Sequence": 1,
+          "Hidden": false,
+          "Value": "2026",
+          "CustomPropertyID": 206
+        },
+        {
+          "Name": "Country Listing",
+          "Group": "Film Info",
+          "Sequence": 2,
+          "Hidden": false,
+          "Value": "USA",
+          "CustomPropertyID": 207
+        },
+        {
+          "Name": "Runtime",
+          "Group": "Film Info",
+          "Sequence": 3,
+          "Hidden": false,
+          "Value": "232",
+          "CustomPropertyID": 204
+        },
+        {
+          "Name": "Filter by Type",
+          "Group": "Cinema Extra",
+          "Sequence": 4,
+          "Hidden": true,
+          "Value": "New Releases",
+          "CustomPropertyID": 326
+        },
+        {
+          "Name": "Status",
+          "Group": "Cinema Extra",
+          "Sequence": 5,
+          "Hidden": true,
+          "Value": "KenticoInclude",
+          "CustomPropertyID": 242
+        },
+        {
+          "Name": "Director(s)",
+          "Group": "Cast/Crew Info",
+          "Sequence": 6,
+          "Hidden": false,
+          "Value": "Alex Gibney",
+          "CustomPropertyID": 205
+        }
+      ],
+      "AdditionalMedia": [
+        {
+          "Caption": "Elon Musk holding a US flag",
+          "MainDuplicate": true,
+          "Sequence": 0,
+          "Type": "Image",
+          "Value": "https://prod5.agileticketing.net/images/user/bc_2338/musk2.jpg",
+          "MediaEmbed": "<img src=\"https://prod5.agileticketing.net/images/user/bc_2338/MUSK2.jpg\" />"
+        }
+      ],
+      "CurrentShowings": [
+        {
+          "ID": 653554,
+          "DateTBD": false,
+          "StartDate": "2026-11-07T13:00:00",
+          "EndDate": "2026-11-07T16:52:00",
+          "DisplayDate": "2026-11-07T13:00:00",
+          "Duration": "232",
+          "Type": "Reserved Seating",
+          "ShortDescriptive": "",
+          "ShortDescription": "Oscar-winner Alex Gibney takes on the world’s richest man, Elon Musk.",
+          "SalesMessage": "Buy",
+          "SalesState": "DuringSales",
+          "LegacyPurchaseLink": "https://boxoffice.hotdocs.ca/websales/pages/ticketsearchcriteria.aspx?evtinfo=653554~cf285ddd-dacb-4f18-89b8-1252c6dcffa6&",
+          "ContentDelivery": "InPerson",
+          "PurchasePrompt": "",
+          "MoreInfoPrompt": "",
+          "ModifiedDate": "2026-09-15T09:45:48",
+          "CustomProperties": [],
+          "Venue": {
+            "VenueID": 289,
+            "Name": "Hot Docs Ted Rogers Cinema",
+            "Short": "HOTDOCS",
+            "Address1": "506 Bloor Street West",
+            "Address2": "",
+            "City": "Toronto",
+            "State": "ON",
+            "Zip": "M5S 1Y3"
+          }
+        }
+      ],
+      "RelatedEvents": []
+    },
+    {
+      "ID": 650655,
+      "ExternalID": "650655",
+      "CorpOrgID": 2338,
+      "CorpOrgName": "Hot Docs",
+      "OrgID": 2339,
+      "Folder": "Cinema Films",
+      "Name": "T.S. Eliot's Four Quartets - with Sophie Fiennes",
+      "Duration": "82",
+      "Type": "Must-See Docs",
+      "Distributor": "Comscore",
+      "DistributorID": "2379",
+      "ShortDescription": "Ralph Fiennes’s exquisite performance of T. S. Eliot's poetic masterpiece, dynamically translated from stage to screen.",
+      "ShortDescriptive1": "Must-See Docs",
+      "ShortDescriptive2": "",
+      "ExtraHTML": "",
+      "DisplayColor": "FFFFFF",
+      "EventImage": "https://prod5.agileticketing.net/images/user/bc_2338/ts%20elliot%20four%20quarters1.jpg",
+      "ThumbImage": "https://prod5.agileticketing.net/images/user/bc_2338/ts%20elliot%20four%20quarters1_thumb.jpg",
+      "InfoLink": "https://boxoffice.hotdocs.ca/websales/pages/info.aspx?evtinfo=650655~cf285ddd-dacb-4f18-89b8-1252c6dcffa6&",
+      "ModifiedDate": "2026-09-15T09:45:48",
+      "CustomProperties": [
+        {
+          "Name": "Copyright",
+          "Group": "Film Info",
+          "Sequence": 1,
+          "Hidden": false,
+          "Value": "2022",
+          "CustomPropertyID": 206
+        },
+        {
+          "Name": "Country Listing",
+          "Group": "Film Info",
+          "Sequence": 2,
+          "Hidden": false,
+          "Value": "UK",
+          "CustomPropertyID": 207
+        },
+        {
+          "Name": "Runtime",
+          "Group": "Film Info",
+          "Sequence": 3,
+          "Hidden": false,
+          "Value": "82",
+          "CustomPropertyID": 204
+        },
+        {
+          "Name": "Filter by Type",
+          "Group": "Cinema Extra",
+          "Sequence": 4,
+          "Hidden": true,
+          "Value": "Must-See Docs",
+          "CustomPropertyID": 326
+        },
+        {
+          "Name": "Status",
+          "Group": "Cinema Extra",
+          "Sequence": 5,
+          "Hidden": true,
+          "Value": "KenticoInclude",
+          "CustomPropertyID": 242
+        },
+        {
+          "Name": "Director(s)",
+          "Group": "Cast/Crew Info",
+          "Sequence": 6,
+          "Hidden": false,
+          "Value": "Sophie Fiennes",
+          "CustomPropertyID": 205
+        }
+      ],
+      "AdditionalMedia": [
+        {
+          "Caption": "Ralph Fiennes looking at the camera",
+          "MainDuplicate": true,
+          "Sequence": 0,
+          "Type": "Image",
+          "Value": "https://prod5.agileticketing.net/images/user/bc_2338/ts%20elliot%20four%20quarters1.jpg",
+          "MediaEmbed": "<img src=\"https://prod5.agileticketing.net/images/user/bc_2338/TS ELLIOT FOUR QUARTERS1.jpg\" />"
+        }
+      ],
+      "CurrentShowings": [
+        {
+          "ID": 653540,
+          "DateTBD": false,
+          "StartDate": "2026-10-17T16:00:00",
+          "EndDate": "2026-10-17T17:22:00",
+          "DisplayDate": "2026-10-17T16:00:00",
+          "Duration": "82",
+          "Type": "Reserved Seating",
+          "ShortDescriptive": "",
+          "ShortDescription": "Ralph Fiennes’s exquisite performance of T. S. Eliot's poetic masterpiece, dynamically translated from stage to screen.",
+          "SalesMessage": "Buy",
+          "SalesState": "DuringSales",
+          "LegacyPurchaseLink": "https://boxoffice.hotdocs.ca/websales/pages/ticketsearchcriteria.aspx?evtinfo=653540~cf285ddd-dacb-4f18-89b8-1252c6dcffa6&",
+          "ContentDelivery": "InPerson",
+          "PurchasePrompt": "",
+          "MoreInfoPrompt": "",
+          "ModifiedDate": "2026-09-15T09:45:48",
+          "CustomProperties": [],
+          "Venue": {
+            "VenueID": 289,
+            "Name": "Hot Docs Ted Rogers Cinema",
+            "Short": "HOTDOCS",
+            "Address1": "506 Bloor Street West",
+            "Address2": "",
+            "City": "Toronto",
+            "State": "ON",
+            "Zip": "M5S 1Y3"
+          }
+        }
+      ],
+      "RelatedEvents": []
+    }
+  ]
+}

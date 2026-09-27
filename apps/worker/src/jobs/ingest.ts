@@ -1,5 +1,6 @@
 import { pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
+import { closeBrowser } from "../browser.js";
 import { venueSlugSchema, type DateRange, type ExtractionBatch, type VenueSlug } from "../contracts.js";
 import { VENUE_EXTRACTORS, type VenueExtractor } from "../extractors/index.js";
 import { createDefaultPipeline, processShowtime, type PipelineDependencies } from "../normalization/pipeline.js";
@@ -169,6 +170,8 @@ async function main(argv: string[]): Promise<void> {
     if (unhealthy) process.exitCode = 1;
   } finally {
     await pipeline.repository.close();
+    // The Hot Docs extractor keeps a browser open; the process cannot exit until it is closed.
+    await closeBrowser();
   }
 }
 

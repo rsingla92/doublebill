@@ -37,8 +37,8 @@ Reject analytics, ad, newsletter, CAPTCHA, and payment calls. A schedule source 
 | Kingsway Theatre | Hand-made static HTML, http only | `http://kingswaymovies.ca/new.html`, one week as text | High |
 | The Royal | WordPress posts | `/wp-json/wp/v2/posts?categories=95` (the "screenings" category) | Medium |
 | Paradise Theatre | WordPress (Marquee theme) with its own box office | `/calendar-view/YYYY-MM` for the films, each film page's ScreeningEvent JSON-LD for the screenings | High |
-| TIFF Lightbox | tiff.net behind AWS WAF | Every path answers a JavaScript challenge (HTTP 202, `x-amzn-waf-action: challenge`); no server-side source found | Blocked |
-| Hot Docs Ted Rogers Cinema | Apostrophe CMS + Agile Ticketing | hotdocs.ca has no schedule of its own; `/whats-on/cinema` redirects to the Agile box office, which is behind Incapsula | Blocked |
+| TIFF Lightbox | tiff.net behind AWS WAF; tickets on Ticketmaster | Every path answers a JavaScript challenge from a server, and a hard 403 from GitHub's runners; Ticketmaster blocks the runners too | Blocked |
+| Hot Docs Ted Rogers Cinema | Apostrophe CMS + Agile Ticketing behind Incapsula | The Agile WebSales JSON feed `boxoffice.hotdocs.ca/websales/feed.ashx?guid=64170f3e-…&showslist=true&format=json`, loaded in headless Chrome | High |
 | Revue Cinema | WordPress (Bricks) + Agile Ticketing | FullCalendar events array on `/calendar/`; Agile link from each film page | High |
 | Fox Theatre | WordPress (Elementor) + Agile Ticketing | `/wp-json/wp/v2/movies` for the films, each film page for times and Agile links | High |
 
@@ -222,11 +222,16 @@ Investigated 2026-09-25 from a sandbox that can reach the sites. Every Toronto v
 
 ### TIFF Lightbox (not ingested)
 
-- Every path on `www.tiff.net`, including `robots.txt`, answers HTTP 202 with `x-amzn-waf-action: challenge` and an AWS WAF JavaScript challenge page, whatever the headers. The Internet Archive holds the same challenge page. The listing JSON the site fetches could not be observed from a server, and Ticketmaster's site is bot-protected as well. TIFF stays out until a source that answers without a browser is found; the `tiff-lightbox` theatre row exists and simply has no showtimes.
+- Every path on `www.tiff.net`, including `robots.txt`, answers HTTP 202 with `x-amzn-waf-action: challenge` and an AWS WAF JavaScript challenge page, whatever the headers. The Internet Archive holds the same challenge page.
+- Investigated again on 2026-09-27 with headless Chrome on a GitHub-hosted runner (the machine the ingest runs on): `www.tiff.net/calendar` answers HTTP 403 "Request blocked" from CloudFront before any challenge, so the runner's address range is refused outright and no browser helps. `www.ticketmaster.ca`, where TIFF sells, answers the runner's browser with its "browsing activity has been paused" block page, and its Discovery API needs a registered key. No public host of tiff.net outside the WAF serves the listings (`shop.tiff.net` is the merchandise store, `oauth.tiff.net` and `cinemetrics.tiff.net` are staff tools). Third-party listing sites carry only a couple of TIFF titles.
+- What would work: a Ticketmaster Discovery API key as a repository secret (the API lists every TIFF Bell Lightbox event with its deep link, start time and images), or a runner whose egress address tiff.net does not block. The `tiff-lightbox` theatre row exists and simply has no showtimes.
 
-### Hot Docs Ted Rogers Cinema (not ingested)
+### Hot Docs Ted Rogers Cinema
 
-- hotdocs.ca (Apostrophe CMS) has no schedule of its own: `/whats-on/cinema` redirects to `boxoffice.hotdocs.ca`, an Agile Ticketing site behind Incapsula that returns a block page to server-side requests, and the Agile feed and widget are on the same host. Nothing is archived. As with TIFF, the theatre row exists without showtimes.
+- hotdocs.ca (Apostrophe CMS) has no schedule of its own: `/whats-on/cinema` redirects to `boxoffice.hotdocs.ca`, an Agile Ticketing site behind Incapsula that returns a block page to every server-side request, whatever the headers; the Agile feed and widget are on the same host.
+- Loaded in headless Chrome, the Incapsula interstitial (a short waiting room) resolves in about fifteen seconds and the box office answers normally, including on a GitHub-hosted runner. The box office's own scripts name the WebSales feed of the "Cinema A-Z" entry group: `/websales/feed.ashx?guid=64170f3e-6ca4-4dbc-9cb5-e359273e95dd&showslist=true&format=json&withmedia=true&v=latest` (`UpdateFrequencyMinutes: 10`). It is one document, about 200 KB, with `ArrayOfShows`: per film `ID`, `Name` as printed ("Frankenstein (1931)", "Unzipped - 4K Restoration"), `ShortDescription`, `ShortDescriptive1` (the strand: "New Release", "Nightmares on Bloor Street", "Stories We Told"), `EventImage`, `InfoLink` (the film's page on the box office) and `CustomProperties` (`Copyright` is the film's year, `Director(s)`, `Country Listing`, `Runtime`, `Filter by Type`). Each of `CurrentShowings` has `ID` (the `sourceUid`), `StartDate` in local time without offset, `EndDate`, `SalesState`, `SalesMessage`, `LegacyPurchaseLink` (`ticketsearchcriteria.aspx?evtinfo=<showing id>~<guid>`, the purchase page for that screening) and `Venue.Name`.
+- On 2026-09-27 the feed held 35 films and 48 showings, every one at "Hot Docs Ted Rogers Cinema", through mid-November plus the monthly Doc Soup dates. The "Cinema by Date" list page (`list.aspx?epguid=a2104450-…`) shows the same showings plus the not-yet-titled Doc Soup subscription placeholders, which the feed leaves out. The festival has its own entry group and feed, so festival screenings at other venues are not expected here; the extractor still keeps only showings whose venue is the cinema.
+- The extractor (`extractors/hot-docs.ts`) fetches the feed through `browser.ts` (playwright-core driving the runner's Chrome, or `BROWSER_EXECUTABLE`) and needs no other request. Fixture: `hot-docs-feed.json` (five films from the real feed).
 
 ## Montreal
 
