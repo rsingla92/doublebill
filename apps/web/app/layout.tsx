@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { Analytics } from "@/components/analytics";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
 import { withBase } from "@/lib/base-path";
 import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
@@ -21,5 +22,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#f5f0e4", colorScheme: "light", width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body id="top">{children}<ServiceWorkerRegister /></body></html>;
+  return <html lang="en"><body id="top">{children}<ServiceWorkerRegister /><Analytics /></body></html>;
 }

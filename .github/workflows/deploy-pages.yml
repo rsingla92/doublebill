@@ -58,6 +58,8 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # Optional page-view counting; a repository variable, since the code is public in the page anyway.
+          NEXT_PUBLIC_GOATCOUNTER_CODE: ${{ vars.GOATCOUNTER_CODE }}
         run: npm run build --workspace=@vic/web
       - uses: actions/upload-pages-artifact@v3
         with:
