@@ -8,11 +8,23 @@ export interface HttpOptions {
   attempts?: number;
 }
 
+/**
+ * Statuses a site's firewall answers with when it turns away this client rather
+ * than the request: Cloudflare and shared hosts refuse some GitHub runner
+ * addresses with a 403 while answering the same URL from elsewhere.
+ */
+const BLOCKED_STATUSES = new Set([401, 403, 429]);
+
 export class HttpError extends Error {
   constructor(readonly url: string, readonly status: number) {
     super(`GET ${url} failed with ${status}`);
     this.name = "HttpError";
   }
+}
+
+/** True when the source blocked the request (see BLOCKED_STATUSES), not when it failed or moved. */
+export function isBlocked(error: unknown): boolean {
+  return error instanceof HttpError && BLOCKED_STATUSES.has(error.status);
 }
 
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));

@@ -213,6 +213,19 @@ export class CinemaRepository {
   }
 
   /**
+   * How many of the theatre's latest finished runs in a row, newest first and at most
+   * `limit`, the source blocked (`metadata.blocked`), not counting `exceptRunId`.
+   */
+  async countRecentBlocks(theatreId: string, exceptRunId: string, limit: number): Promise<number> {
+    const rows = await this.sql<{ blocked: boolean }[]>`
+      select coalesce((metadata->>'blocked')::boolean, false) as blocked from ingestion_runs
+      where theatre_id = ${theatreId} and id <> ${exceptRunId} and finished_at is not null
+      order by started_at desc limit ${limit}`;
+    const streak = rows.findIndex((row) => !row.blocked);
+    return streak === -1 ? rows.length : streak;
+  }
+
+  /**
    * Hide future showtimes the source no longer publishes. History is kept; the row
    * simply stops being active. Only rows starting before `until` are considered so a
    * date-bounded fetch never hides sessions it was not asked about, and the guard
