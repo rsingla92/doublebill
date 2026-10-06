@@ -53,6 +53,14 @@ Posters are served by the site itself. Before each build, `apps/web/scripts/fetc
 
 The review queue that shows what to pin: `select venue, normalized_title, match_reason from raw_source_items ...` (see `docs/architecture.md`).
 
+## Page views
+
+The site counts page views with [GoatCounter](https://www.goatcounter.com), which is free for non-commercial sites, sets no cookies and collects no personal data, so it needs no consent banner. Counting is off until it is configured:
+
+1. Sign up at goatcounter.com and pick a site code, for example `doublebill`; the dashboard is then at `doublebill.goatcounter.com`.
+2. In this repository's settings, under Secrets and variables, Actions, Variables, add a repository variable `GOATCOUNTER_CODE` with that code.
+3. The next deploy adds the counter. Local and demo builds never count.
+
 ## Cities
 
 Every theatre carries a `city` and an IANA `timezone`, the JSON files include both, and the site shows a city picker in the dateline as soon as the data holds more than one city. Times are always shown in the theatre's own zone. Adding a city means seeding its theatres (a migration like `006_seed_toronto_montreal_theatres.sql`) and writing one extractor per venue under `apps/worker/src/extractors/`, then adding the venue slug to `venueSlugSchema`; nothing in the web app changes. Other cities are tracked in issue #5.
