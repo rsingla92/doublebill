@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { addPageDetails, inferYear, parseDateTime, printedYear, readPageDetails } from "../src/extractors/utils.js";
 
 const reference = (iso: string) => DateTime.fromISO(iso, { zone: "America/Vancouver" });
+/** Vancouver wall time as ISO. Winter offsets come from the tz database: BC stays on -07:00 from November 2026 in newer releases. */
+const local = (wallTime: string) => reference(wallTime).toISO();
 
 describe("inferYear", () => {
   it("looks forward across the new year", () => {
@@ -17,15 +19,15 @@ describe("inferYear", () => {
 
 describe("parseDateTime", () => {
   it("infers the year from the reference date", () => {
-    expect(parseDateTime("Jan 3 7:00 pm", ["LLL d h:mm a"], { reference: reference("2026-12-20") }).toISO()).toBe("2027-01-03T19:00:00.000-08:00");
+    expect(parseDateTime("Jan 3 7:00 pm", ["LLL d h:mm a"], { reference: reference("2026-12-20") }).toISO()).toBe(local("2027-01-03T19:00"));
   });
 
   it("uses a weekday token to disambiguate the year", () => {
     // Jan 2 is a Saturday in 2027 but a Friday in 2026.
-    expect(parseDateTime("Sat Jan 2 7:00 pm", ["ccc LLL d h:mm a"], { reference: reference("2026-12-28") }).toISO()).toBe("2027-01-02T19:00:00.000-08:00");
+    expect(parseDateTime("Sat Jan 2 7:00 pm", ["ccc LLL d h:mm a"], { reference: reference("2026-12-28") }).toISO()).toBe(local("2027-01-02T19:00"));
     expect(parseDateTime("Sat Sep 26 6:10 pm", ["ccc LLL d h:mm a"], { reference: reference("2026-09-21") }).toISO()).toBe("2026-09-26T18:10:00.000-07:00");
     // Dec 31 is a Thursday in 2026 and a Friday in 2027; seen in early January the Thursday is last week's.
-    expect(parseDateTime("Thu Dec 31 9:00 pm", ["ccc LLL d h:mm a"], { reference: reference("2027-01-03") }).toISO()).toBe("2026-12-31T21:00:00.000-08:00");
+    expect(parseDateTime("Thu Dec 31 9:00 pm", ["ccc LLL d h:mm a"], { reference: reference("2027-01-03") }).toISO()).toBe(local("2026-12-31T21:00"));
   });
 
   it("rejects a weekday that only fits a date far from the reference", () => {

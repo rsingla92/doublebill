@@ -11,6 +11,9 @@ import {
   VENUE_EXTRACTORS,
 } from "../src/extractors/index.js";
 
+/** Vancouver wall time as an extractor prints it. Winter offsets come from the tz database: BC stays on -07:00 from November 2026 in newer releases. */
+const local = (wallTime: string) => DateTime.fromISO(wallTime, { zone: "America/Vancouver" }).toISO({ suppressMilliseconds: true });
+
 describe("venue registry", () => {
   it("has an extractor for every venue slug", () => {
     expect(Object.keys(VENUE_EXTRACTORS).sort()).toEqual([...venueSlugSchema.options].sort());
@@ -70,7 +73,7 @@ describe("The Cinematheque", () => {
   it("dates a January screening in the next year even on a 2026 programme page", () => {
     const december = DateTime.fromISO("2026-12-20", { zone: "America/Vancouver" });
     const [showtime] = parseCinemathequeFilmPage(page("January 9", "Saturday"), "https://thecinematheque.ca/films/2026/samurai-prisoner", december);
-    expect(showtime?.startsAt).toBe("2027-01-09T19:00:00-08:00");
+    expect(showtime?.startsAt).toBe(local("2027-01-09T19:00"));
   });
 
   it("reads Today and Tomorrow relative to the crawl date", () => {
@@ -106,7 +109,7 @@ describe("VIFF", () => {
 
   it("rolls a January date over to the next year when the weekday only fits there", () => {
     const [showtime] = parseViffPage(card("Sat Jan 2", "7:00 pm"), "https://viff.org/whats-on/", DateTime.fromISO("2026-12-28", { zone: "America/Vancouver" }));
-    expect(showtime?.startsAt).toBe("2027-01-02T19:00:00-08:00");
+    expect(showtime?.startsAt).toBe(local("2027-01-02T19:00"));
   });
 
   it("reads the year the card prints beside the running time, never the season label", () => {
@@ -153,7 +156,7 @@ describe("Hollywood Theatre", () => {
   it("keeps secondary categories as tags but not the film gate itself", () => {
     const html = `<meta name="description" content="Concert Film March 1, 2027 at Hollywood Theatre"><h1 class="heading-events">Concert Film</h1><a href="/categories/film">Film</a><a href="/categories/music">Music</a><p>SHOW: 7:00pm</p>`;
     const [showtime] = parseHollywoodEventPage(html, "https://www.hollywoodtheatre.ca/events/concert-film").showtimes;
-    expect(showtime).toMatchObject({ tags: ["music"], startsAt: "2027-03-01T19:00:00-08:00" });
+    expect(showtime).toMatchObject({ tags: ["music"], startsAt: local("2027-03-01T19:00") });
   });
 
   it("finds the date in the page when the description no longer carries it", () => {
