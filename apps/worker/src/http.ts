@@ -22,9 +22,29 @@ export class HttpError extends Error {
   }
 }
 
-/** True when the source blocked the request (see BLOCKED_STATUSES), not when it failed or moved. */
+/** The request never got an answer: the connection failed, was reset or timed out on every attempt. */
+export class NetworkError extends Error {
+  constructor(readonly url: string, cause: unknown) {
+    super(`GET ${url} failed: ${describeNetworkFailure(cause)}`, { cause });
+    this.name = "NetworkError";
+  }
+}
+
+/** Node reports every network failure as "fetch failed"; the reason (ECONNRESET, a timeout) is on its cause. */
+function describeNetworkFailure(error: unknown): string {
+  if (!(error instanceof Error)) return String(error);
+  const cause = error.cause as { code?: unknown; message?: unknown } | undefined;
+  const detail = [cause?.code, cause?.message].filter((part) => typeof part === "string" && part.length > 0).join(": ");
+  return detail ? `${error.message} (${detail})` : error.message;
+}
+
+/**
+ * True when the source blocked the request (see BLOCKED_STATUSES) or could not be
+ * reached at all, not when it answered with a failure or moved. Both come and go
+ * with the runner's address and the host's mood.
+ */
 export function isBlocked(error: unknown): boolean {
-  return error instanceof HttpError && BLOCKED_STATUSES.has(error.status);
+  return (error instanceof HttpError && BLOCKED_STATUSES.has(error.status)) || error instanceof NetworkError;
 }
 
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
@@ -60,7 +80,8 @@ async function get(url: URL, options: HttpOptions = {}): Promise<Response> {
     await response.body?.cancel().catch(() => undefined);
   }
 
-  throw lastError instanceof Error ? lastError : new Error(`GET ${url} failed`);
+  if (lastError instanceof HttpError) throw lastError;
+  throw new NetworkError(url.toString(), lastError);
 }
 
 export async function fetchText(url: URL, options?: HttpOptions): Promise<string> {

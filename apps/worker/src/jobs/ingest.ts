@@ -12,7 +12,7 @@ export const DEFAULT_HORIZON_DAYS = 60;
 const MAX_HORIZON_DAYS = 120;
 const DAY_MS = 86_400_000;
 /**
- * A venue whose site refuses the runner (see `isBlocked`) keeps its last schedule
+ * A venue whose site refuses or cannot be reached from the runner (see `isBlocked`) keeps its last schedule
  * and only turns the run red once this many runs in a row, about a day, were blocked.
  */
 export const BLOCKED_GRACE_RUNS = 3;
@@ -41,7 +41,7 @@ export interface VenueIngestReport {
   deactivated: number;
   /** True when the reconciliation guard refused to hide most of the venue's schedule. */
   reconciliationSkipped: boolean;
-  /** True when the source blocked this run (a 401, 403 or 429) rather than failing. */
+  /** True when the source blocked this run (a 401, 403 or 429) or could not be reached, rather than failing. */
   blocked: boolean;
   /** Consecutive blocked runs, this one included; 0 when this run was not blocked. */
   blockedStreak: number;
@@ -158,7 +158,7 @@ export async function ingest(dependencies: IngestDependencies, options: IngestOp
 /**
  * A run that fetched listings but could not persist them, or that had to refuse
  * reconciliation, must fail loudly rather than leave a stale schedule behind. A
- * venue that blocks the runner is tolerated for BLOCKED_GRACE_RUNS runs: a failed
+ * venue that blocks the runner or cannot be reached is tolerated for BLOCKED_GRACE_RUNS runs: a failed
  * extraction hides nothing, and these blocks come and go with the runner's address.
  */
 export function isUnhealthy(report: VenueIngestReport): boolean {
@@ -192,7 +192,7 @@ async function main(argv: string[]): Promise<void> {
     for (const report of reports) console.log(JSON.stringify(report));
     for (const report of reports.filter((item) => item.blocked && !isUnhealthy(item))) {
       // A GitHub Actions annotation, so a tolerated block still shows on the run page.
-      console.log(`::warning title=${report.venueSlug} blocked the runner::${report.errors.join("; ")} (blocked ${report.blockedStreak} run(s) in a row; the job fails at ${BLOCKED_GRACE_RUNS}, and the last schedule stays up until then)`);
+      console.log(`::warning title=${report.venueSlug} blocked or unreachable::${report.errors.join("; ")} (blocked ${report.blockedStreak} run(s) in a row; the job fails at ${BLOCKED_GRACE_RUNS}, and the last schedule stays up until then)`);
     }
     if (reports.some(isUnhealthy)) process.exitCode = 1;
   } finally {

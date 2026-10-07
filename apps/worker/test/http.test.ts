@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fetchJson, fetchText, HttpError, isBlocked } from "../src/http.js";
+import { fetchJson, fetchText, HttpError, isBlocked, NetworkError } from "../src/http.js";
 
 const url = new URL("https://example.test/schedule");
 
@@ -23,6 +23,14 @@ describe("fetchText", () => {
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
+  it("names the reason when the host cannot be reached on any attempt", async () => {
+    const reset = Object.assign(new Error("read ECONNRESET"), { code: "ECONNRESET" });
+    vi.stubGlobal("fetch", vi.fn(async () => { throw new TypeError("fetch failed", { cause: reset }); }));
+    const failure = fetchText(url, { attempts: 2 });
+    await expect(failure).rejects.toBeInstanceOf(NetworkError);
+    await expect(failure).rejects.toThrow("GET https://example.test/schedule failed: fetch failed (ECONNRESET: read ECONNRESET)");
+  });
+
   it("gives up after the configured number of attempts", async () => {
     const fetchMock = vi.fn(async () => new Response("busy", { status: 503 }));
     vi.stubGlobal("fetch", fetchMock);
@@ -44,6 +52,7 @@ describe("isBlocked", () => {
     expect(isBlocked(new HttpError(url.toString(), 429))).toBe(true);
     expect(isBlocked(new HttpError(url.toString(), 404))).toBe(false);
     expect(isBlocked(new HttpError(url.toString(), 503))).toBe(false);
-    expect(isBlocked(new TypeError("fetch failed"))).toBe(false);
+    expect(isBlocked(new NetworkError(url.toString(), new TypeError("fetch failed")))).toBe(true);
+    expect(isBlocked(new TypeError("unexpected"))).toBe(false);
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { ExtractedShowtime, ExtractionBatch } from "../src/contracts.js";
-import { HttpError } from "../src/http.js";
+import { HttpError, NetworkError } from "../src/http.js";
 import { BLOCKED_GRACE_RUNS, ingest, ingestVenue, isUnhealthy, type IngestDependencies } from "../src/jobs/ingest.js";
 import type { MergeInput } from "../src/normalization/repository.js";
 
@@ -90,6 +90,14 @@ describe("ingestVenue", () => {
     expect(report).toMatchObject({ status: "failed", blocked: true, blockedStreak: 2 });
     expect(repository.countRecentBlocks).toHaveBeenCalledWith("theatre-1", "run-1", BLOCKED_GRACE_RUNS);
     expect(repository.finishRun).toHaveBeenCalledWith("run-1", expect.objectContaining({ status: "failed", metadata: expect.objectContaining({ blocked: true }) }));
+  });
+
+  it("counts a source it could not reach as blocked", async () => {
+    const { dependencies } = harness();
+    const unreachable = async () => { throw new NetworkError("https://example.test/day", new TypeError("fetch failed")); };
+    const report = await ingestVenue("rio-theatre", dependencies, { now, extractors: { "rio-theatre": unreachable } });
+
+    expect(report).toMatchObject({ status: "failed", blocked: true, blockedStreak: 1, errors: ["extraction failed: GET https://example.test/day failed: fetch failed"] });
   });
 
   it("does not count a failure that is not a block as one", async () => {
